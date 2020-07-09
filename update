@@ -11,7 +11,7 @@ const swarmhash = require('swarmhash')
 // This script updates the index files list.js and list.txt in the bin directory,
 // as well as the soljson-latest.js files.
 
-var dirs = ['/bin', '/wasm']
+var dirs = ['/macos', '/linux', '/wasm', '/bin']
 dirs.forEach(function (dir) {
   fs.readdir(path.join(__dirname, dir), { withFileTypes: true }, function (err, files) {
     if (err) {
@@ -35,9 +35,9 @@ dirs.forEach(function (dir) {
 
     // ascending list (oldest version first)
     const parsedList = files
-      .filter(function (file) { return dir === '/wasm' || !file.isSymbolicLink() })
+      .filter(function (file) { return dir !== '/bin' || !file.isSymbolicLink() })
       .map(function (file) { return file.name })
-      .map(function (file) { return file.match(/^soljson-v([0-9.]*)(-([^+]*))?(\+(.*))?.js$/) })
+      .map(function (file) { return file.match(/^(?:soljson|solc-macos|solc-static-linux)-v([0-9.]*)(-([^+]*))?(\+(commit\.[0-9a-f]+))?(?:.js)?$/) })
       .filter(function (version) { return version })
       .map(function (pars) { return { path: pars[0], version: pars[1], prerelease: pars[3], build: pars[5] } })
       .map(function (pars) {
